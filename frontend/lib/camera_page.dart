@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:camera/camera.dart';
@@ -41,24 +42,23 @@ class _CameraPageState extends State<CameraPage> {
       return null;
     }
     try {
-      // File 객체로 받아야 하나?
       XFile picture = await _cameraController.takePicture();
-
-      await ImageUploader.uploadFile(picture);
 
       try {
         var serverResponse = await ImageUploader.uploadFile(picture);
         print('Server response: $serverResponse');
+        var bytes = await picture.readAsBytes();
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => ResultPage(
+                  response: serverResponse,
+                  picture: bytes,
+                )));
       } catch (e) {
         print('Error uploading file: $e');
       }
 
-      Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => PreviewPage(
-                picture: picture,
-              )));
     } on CameraException catch (e) {
       debugPrint('Error occured while taking picture: $e');
       return null;
