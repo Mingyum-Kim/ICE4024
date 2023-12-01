@@ -6,12 +6,13 @@ import 'package:camera/camera.dart';
 class ImageUploader {
   static Future<String> uploadFile(XFile file) async {
 
-    var uri = Uri.parse('http://10.0.2.2:5000/predict');
-
+    var uri = Uri.parse('http://localhost:5000/predict');
+    var filename = file.path.split('/').last;
     var request = http.MultipartRequest('POST', uri)
       ..files.add(await http.MultipartFile.fromBytes(
         'file',
         await file.readAsBytes(),
+        filename: filename,
         contentType: MediaType('image', "jpg"),
       ));
 
